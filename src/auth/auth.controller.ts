@@ -7,8 +7,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("signup")
-  registerUser(@Body() CreateUserDto: CreateUserDto)
+  registerUser(@Body() createUserDto: CreateUserDto)
   {
-    throw new Error('Method not implemented');
+    return this.authService.registerUser(createUserDto);
   }
 }

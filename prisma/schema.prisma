@@ -13,43 +13,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model comments {
-  id      Int    @id @default(autoincrement())
-  text  String 
+model Comment {
+  id        Int @id @default(autoincrement())
+  text      String 
   createdAt DateTime? @default(now()) @db.Timestamp(6)
-  author_id Int
-  training_id Int 
-  users users @relation(fields: [author_id], references: [id],),
-  training training @relation(fields: [training_id], references: [id],),
+  user_id   Int
+  user      User      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comments_author_id_users_id_fk")
+  post_id   Int
+  post      Post      @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comments_post_id_posts_id_fk")
 }
 
-
-model groups {
-  id Int @id @default(autoincrement())
-  name String
-  users_to_groups users_to_groups[]
+model Post {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  slug      String    @unique
+  title     String
+  desc      String
+  img       String?
+  views     Int       @default(0)
+  catSlug   String
+  cat       Category  @relation(fields: [catSlug], references: [slug])
+  userEmail String
+  user      User      @relation(fields: [userEmail], references: [email])
+  comments  Comment[]
 }
 
-model training {
-  id Int @id @default(autoincrement())
+model User {
+  id                 Int       @id @default(autoincrement())
+  email              String    @unique
+  name               String
+  password           String
+  hashedRefreshToken String?
+  role               Role      @default(USER)
+  comments           Comment[]
+  posts              Post[]
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  slug  String  @unique
   title String
-  content String 
-  createdAt DateTime? @default(now()) @db.Timestamp(6)
-  author_id Int
-  comments comments[]
-  users users @relation(fields: [author_id], references: [id])
-}
-model profile_info{
-  id Int @id @default(autoincrement())
-  user_id Int?
-  metadata Json?
+  img   String?
+  Posts Post[]
 }
 
-model users {
-  id Int @id @default(autoincrement())
-  name String 
-  email String 
-  password String 
-  comments comments[]
-  training training[]
+enum Role {
+  ADMIN
+  EDITOR
+  USER
 }
