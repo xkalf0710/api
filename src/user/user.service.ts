@@ -5,7 +5,6 @@ import { hash } from 'argon2';
 
 @Injectable()
 export class UserService {
-
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -21,7 +20,7 @@ export class UserService {
   }
 
   async findByEmail(email: string){
-    this.prisma.user.findUnique({
+   return await this.prisma.user.findUnique({
       where: {
         email,
       }
